@@ -1,3 +1,6 @@
+---
+import Footer from "../components/footer.astro"
+---
 <!doctype html>
 <html lang="en">
 	<head>
@@ -5,18 +8,200 @@
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+		<title>Mockup</title>
 	</head>
 	<body>
-		<slot />
+			<main id="mainContent">
+				<section class="header" id="section1">
+					<h1>Muckit</h1>
+					<nav>
+						<a href="/">Home</a>
+						<a href="/about">About</a>
+						<a href="/blog">Blog</a>
+					</nav>
+				</section>
+				<model-viewer id="modelViewer" src="/3d_printer.glb" shadow-intensity="3" camera-orbit="45deg 0deg" camera-target="0m 0m 0m" field-of-view="15deg"></model-viewer>
+				<section id="section2">
+					<article>
+						<h1>Titulo1</h1>
+						<p>Contenido para articulo 1</p>
+					</article>
+				</section>
+				<section id="section3">
+					<article>
+						<h1>Titulo2</h1>
+						<p>Contenido para articulo 2</p>
+					</article>
+				</section>
+			</main>
+		<Footer/>
 	</body>
 </html>
 
 <style>
-	html,
-	body {
+	@font-face {
+		font-family: 'ClashDisplay-Variable';
+		src: url('../assets/fonts/ClashDisplay-Variable.ttf') format('woff2');
+		font-weight: 200 700;
+		font-display: swap;
+		font-style: normal;
+	}
+
+	@media (max-width: 768px) {
+		.header h1 {
+			font-size: 5em;
+		}
+
+		main section article{
+		margin: auto;
+		}
+		
+	}
+	@media (min-width: 769px) {
+		.header h1 {
+			font-size: 10em;
+		}
+		main section article{
+		margin: 0 100px;
+		}
+		
+	}
+	header
+	 {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+    }
+     .header h1{
+        color: white;
+        text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        letter-spacing: 10px;
+        margin: 20px 0;
+    }
+    nav a {
+        color: white;
+        text-decoration: none;
+        margin-left: 1rem;
+    }
+	body{
 		margin: 0;
+		padding: 0;
+		font-family: 'ClashDisplay-Variable';
+		background-color: #644fce;
+		position: relative;
+
+	}
+	body::after{
+		content: '';
+		position: fixed;
+		top: 0;
+		left: 0;
 		width: 100%;
 		height: 100%;
+		background-color: rgba(0,0,0,0.3);
+		z-index: -1;
 	}
+	model-viewer {
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        z-index: -1;
+        top: 0;
+		bottom: 0;
+        object-fit: cover;
+    }
+
+	main::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        background: radial-gradient(circle at center, transparent, transparent 70%, rgba(0, 0, 0,0.8));
+    }
+	main{
+		scroll-snap-type: y mandatory;
+		scroll-behavior: smooth;
+		scroll-snap-align: start;
+		white-space: nowrap;
+		scrollbar-width: none;
+
+		overflow-y: scroll;
+		height: 100vh;
+
+	}
+	main section{
+		scroll-snap-align: center;
+		scroll-behavior: smooth;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		height: 100vh;
+	}
+
+	#section1 {
+		align-items: center;
+	}
+	#section2 {
+		align-items: flex-start;
+	}
+	#section3 {
+		align-items: flex-end;
+	}
+
+	main section article{
+		color: white;
+		text-align: center;
+		border-radius: 10px;
+		padding: 1rem;
+		margin: 100px;
+		z-index: 10;
+	}
+	
+	main section article{
+		background-color: rgb(100, 79, 207,0.2);
+		
+	}
+
 </style>
+<script>
+    const modelViewer = document.getElementById('modelViewer');
+    const sections = document.querySelectorAll('section');
+
+    const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const sectionId = entry.target.id;
+                if (modelViewer) {
+                    if (sectionId === 'section1') {
+						modelViewer.setAttribute('camera-orbit', '45deg 40deg');
+                        modelViewer.setAttribute('camera-target', '0m 2m 2m');
+                        modelViewer.setAttribute('field-of-view', '10deg');
+                    } else if (sectionId === 'section2') {
+						modelViewer.setAttribute('camera-orbit', '0deg 80deg');
+                        modelViewer.setAttribute('camera-target', '0m 0m 0m');
+                        modelViewer.setAttribute('field-of-view', '30deg');
+                    } else if (sectionId === 'section3') {
+						modelViewer.setAttribute('camera-orbit', '180deg 40deg');
+                        modelViewer.setAttribute('camera-target', '0m 0m 0m');
+                        modelViewer.setAttribute('field-of-view', '60deg');
+					}
+                }
+            }
+        });
+    }, options);
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+</script>
